@@ -14,7 +14,7 @@ while not (re.search("^([1-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9
         product_number = input("   >>> Please type a 4 digit number without 0000: ")
 
 
-vid_number = input("vid1, vid2 or vid3: ")
+vid_number = input("vid, vid1, vid2 or vid3: ")
 
 multiple = input('Type "m" if more than 2 products are in the picture: ') == "m"
 
@@ -36,6 +36,7 @@ dir_tool = "recording_tool"
 dir_mm = "multiple_manipulated"
 dir_mp = "manipulated_images"
 dir_frames = "video_frames"
+dir_vid = "vid"
 dir_vid1 = "vid1"
 dir_vid2 = "vid2"
 dir_vid3 = "vid3"
@@ -49,13 +50,23 @@ cam6 = "228"
 parent_dir_mp = os.getcwd() + f"\\{dir_tool}" 
 create_dir_mp = os.path.join(parent_dir_mp, dir_mm)
 
+create_dir_vid = os.path.join(create_dir_mp, dir_vid)
 create_dir_vid1 = os.path.join(create_dir_mp, dir_vid1)
 create_dir_vid2 = os.path.join(create_dir_mp, dir_vid2)
 create_dir_vid3 = os.path.join(create_dir_mp, dir_vid3)
 
+vid_product_number = os.path.join(create_dir_vid, product_number)
 vid1_product_number = os.path.join(create_dir_vid1, product_number)
 vid2_product_number = os.path.join(create_dir_vid2, product_number)
 vid3_product_number = os.path.join(create_dir_vid3, product_number)
+
+
+cam1_vid = os.path.join(vid_product_number, cam1)
+cam2_vid = os.path.join(vid_product_number, cam2)
+cam3_vid = os.path.join(vid_product_number, cam3)
+cam4_vid = os.path.join(vid_product_number, cam4)
+cam5_vid = os.path.join(vid_product_number, cam5)
+cam6_vid = os.path.join(vid_product_number, cam6)
 
 cam1_vid1 = os.path.join(vid1_product_number, cam1)
 cam2_vid1 = os.path.join(vid1_product_number, cam2)
@@ -84,6 +95,10 @@ else:
     os.mkdir(create_dir_mp)
     print(f"\nDirectory '{dir_mm}' created.\n")     
 
+if os.path.exists(create_dir_vid):
+     ""
+else:
+     os.mkdir(create_dir_vid)
 
 if os.path.exists(create_dir_vid1):
      ""
@@ -99,6 +114,31 @@ if os.path.exists(create_dir_vid3):
      ""
 else:
      os.mkdir(create_dir_vid3)
+
+if vid_number == dir_vid:
+
+    if os.path.exists(vid_product_number):
+        ""
+    else:
+        os.mkdir(vid_product_number)
+    
+    if not os.path.exists(cam1_vid):
+        os.mkdir(cam1_vid)
+
+    if not os.path.exists(cam2_vid):
+        os.mkdir(cam2_vid)
+
+    if not os.path.exists(cam3_vid):
+        os.mkdir(cam3_vid)
+    
+    if not os.path.exists(cam4_vid):
+        os.mkdir(cam4_vid)
+
+    if not os.path.exists(cam5_vid):
+        os.mkdir(cam5_vid)
+
+    if not os.path.exists(cam6_vid):
+        os.mkdir(cam6_vid)
 
 if vid_number == dir_vid1:
 
