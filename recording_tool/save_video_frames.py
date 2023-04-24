@@ -17,14 +17,11 @@ success,image = vidcap.read()
 count = 0
 frame_count = 0
 while success:
-    saved= cv2.imwrite(f"recording_tool/manipulated_images/{vid_number}/frames/frame%d.png" % frame_count, image)          
     success,image = vidcap.read()
     print('Read a new frame: ', success)
     if count % 25==0:
+        saved= cv2.imwrite(f"recording_tool/manipulated_images/{vid_number}/frames/frame%d.png" % frame_count, image) 
         print('frame saved')
         frame_count += 1
-    else:
-        os.remove(f"recording_tool/manipulated_images/{vid_number}/frames/frame%d.png" % frame_count)
-        print('frame removed')
     count += 1
         
