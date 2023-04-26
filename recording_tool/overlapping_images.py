@@ -8,7 +8,7 @@ import datetime
 
 dir_tool = "recording_tool"
 dir_mp = "manipulated_images"
-dir_frames = "video_frames"
+dir_all_vid = "videos"
 dir_vid = "vid"
 dir_vid1 = "vid1"
 dir_vid2 = "vid2"
@@ -34,6 +34,7 @@ vid_number = input("Tippe die Anzahl an Videos ein: ")
 parent_dir_mp = os.getcwd() + f"\\{dir_tool}" 
 create_dir_mp = os.path.join(parent_dir_mp, dir_mp)
 
+# add new videos here and create it 
 create_dir_vid = os.path.join(create_dir_mp, dir_vid)
 create_dir_vid1 = os.path.join(create_dir_mp, dir_vid1)
 create_dir_vid2 = os.path.join(create_dir_mp, dir_vid2)
@@ -55,31 +56,20 @@ else:
     os.mkdir(create_dir_mp)
     print(f"\nDirectory '{dir_mp}' created.\n")     
 
-if os.path.exists(create_dir_vid):
-    ""
-else:
+if not os.path.exists(create_dir_vid):
     os.mkdir(create_dir_vid)
 
-if os.path.exists(create_dir_vid1):
-    ""
-else:
+if not os.path.exists(create_dir_vid1):
     os.mkdir(create_dir_vid1)
 
-if os.path.exists(create_dir_vid2):
-    ""
-else:
+if not os.path.exists(create_dir_vid2):
     os.mkdir(create_dir_vid2)
 
-if os.path.exists(create_dir_vid3):
-    ""
-else:
+if not os.path.exists(create_dir_vid3):
     os.mkdir(create_dir_vid3)
 
-#if vid_number == dir_vid:
 
-if os.path.exists(vid_product_number):
-    ""
-else:
+if not os.path.exists(vid_product_number):
     os.mkdir(vid_product_number)
 
 if not os.path.exists(cam1_vid):
@@ -119,7 +109,7 @@ for n in range(2):
                 used_vid.append(random_video)
 
             print(random_video)
-            BGPath = glob.glob(f'{parent_dir_mp}/{dir_mp}/{random_video}/frames/*png')
+            BGPath = glob.glob(f'{parent_dir_mp}/{dir_all_vid}/{random_video}/frames/*png')
             sortedBGPath = natsorted(BGPath)
             for video_frame in sortedBGPath:
                 
