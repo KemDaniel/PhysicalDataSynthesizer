@@ -12,6 +12,7 @@ video_frames/
 test/
 train/
 val/
+videos/
 
 # User-specific files
 *.suo
