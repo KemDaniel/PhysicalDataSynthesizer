@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFilter
 import random
 import os
 import re
@@ -21,8 +21,17 @@ cam5 = "227"
 cam6 = "228"
 bg_count = 0
 
+# real products
 product_list = ["0700", "0701", "0702", "0703", "0704", "0705", "0706", "0707", "0708", "0709", "0710",
-                "0720", "0721", "0722", "0723", "0724", "0725", "0726", "0727", "0728", "0729", "0730",]
+                "0720", "0721", "0722", "0723", "0724", "0725", "0726", "0727", "0728", "0729", "0730",
+                "0740", "0741", "0742", "0743", "0744", "0745", "0746", "0747", "0748", "0749",
+                "0750", "0751", "0752", "0753", "0754", "0755", "0756", "0757", "0758", "0759", 
+                "0760", "0761", "0762", "0763", "0764", "0765", "0766", "0767", "0768", "0769",
+                "0770", "0771", "0772", "0773", "0774", "0775", "0776"]
+# euroshop products
+#product_list = ["0600", "0601", "0602", "0603", "0604", "0605", "0606", "0607", "0608", "0609", "0610", 
+#                "0611", "0612", "0613", "0614", "0615", "0616", "0617", "0618", "0619", "0620", "0621", "0622"]
+
 vid_list = ["vid", "vid1", "vid2", "vid3"]
 used_vid = []
 cam_list = [cam1, cam2, cam3, cam4, cam5, cam6]
@@ -30,6 +39,7 @@ current_time = str(datetime.datetime.now().strftime("%H_%M"))
 
 n_products = input("Tippe die Anzahl an Produkten ein: ")
 vid_number = input("Tippe die Anzahl an Videos ein: ")
+blurred = input('Tppe "b" um blurred Bilder zu erhalten: ')
 
 parent_dir_mp = os.getcwd() + f"\\{dir_tool}" 
 create_dir_mp = os.path.join(parent_dir_mp, dir_mp)
@@ -157,6 +167,13 @@ for n in range(2):
                     img_rotated = img_resized.rotate(random_rotate, expand=True)
 
                     cropped_img_rotated = img_rotated.crop(img_rotated.getbbox())
+
+                    if blurred == "b":
+                        blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
+                        width, height = blurredImage.size
+                    else:
+                        width, height = cropped_img_rotated.size
+
                     width, height = cropped_img_rotated.size
                     x_center = (width/2) + random_x
                     y_center = (height/2) + random_y
@@ -175,7 +192,10 @@ for n in range(2):
                     with open(f"{outPath}/{n}_%d_{cam[0]}.txt" % count, "a") as f:
                         f.write(f"1 {val1} {val2} {val3} {val4}\n")
 
-                    imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
+                    if blurred == "b":
+                        imgBG.paste(blurredImage, (random_x,random_y), mask = blurredImage)
+                    else:
+                        imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
 
                     imgBG.save(fullOutPath)
                     
@@ -245,7 +265,13 @@ for n in range(2):
                             img_rotated = img_resized.rotate(random_rotate, expand=True)
 
                             cropped_img_rotated = img_rotated.crop(img_rotated.getbbox())
-                            width, height = cropped_img_rotated.size
+
+                            if blurred == "b":
+                                blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
+                                width, height = blurredImage.size
+                            else:
+                                width, height = cropped_img_rotated.size
+
                             x_center = (width/2) + random_x
                             y_center = (height/2) + random_y
                             val1 = round(x_center/1920, 4)
@@ -262,7 +288,10 @@ for n in range(2):
                             with open(f"{outPath}/0_%d_{cam[0]}.txt" % count, "a") as f:
                                 f.write(f"1 {val1} {val2} {val3} {val4}\n")
 
-                            imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
+                            if blurred == "b":
+                                imgBG.paste(blurredImage, (random_x,random_y), mask = blurredImage)
+                            else:
+                                imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
 
                         imgBG.save(fullOutPath)
                         bg_count = 0
