@@ -52,9 +52,9 @@ for i in range(int(test_input)):
     png_or_txt = (file_number/2)
     file_number = 0
     
-    train_percentage = png_or_txt * 0.8
-    val_percentage = png_or_txt * 0.1
-    test_percentage = png_or_txt * 0.1
+    train_percentage = png_or_txt * 1.0
+    val_percentage = png_or_txt * 0.0
+    test_percentage = png_or_txt * 0.0
 
     count = 0
     for folder in recording_tool:
