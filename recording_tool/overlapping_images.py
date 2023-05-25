@@ -22,15 +22,15 @@ cam6 = "228"
 bg_count = 0
 
 # real products
-product_list = ["0700", "0701", "0702", "0703", "0704", "0705", "0706", "0707", "0708", "0709", "0710",
-                "0720", "0721", "0722", "0723", "0724", "0725", "0726", "0727", "0728", "0729", "0730",
-                "0740", "0741", "0742", "0743", "0744", "0745", "0746", "0747", "0748", "0749",
-                "0750", "0751", "0752", "0753", "0754", "0755", "0756", "0757", "0758", "0759", 
-                "0760", "0761", "0762", "0763", "0764", "0765", "0766", "0767", "0768", "0769",
-                "0770", "0771", "0772", "0773", "0774", "0775", "0776"]
+#product_list = ["0700", "0701", "0702", "0703", "0704", "0705", "0706", "0707", "0708", "0709", "0710",
+#                "0720", "0721", "0722", "0723", "0724", "0725", "0726", "0727", "0728", "0729", "0730",
+#                "0740", "0741", "0742", "0743", "0744", "0745", "0746", "0747", "0748", "0749",
+#                "0750", "0751", "0752", "0753", "0754", "0755", "0756", "0757", "0758", "0759", 
+#                "0760", "0761", "0762", "0763", "0764", "0765", "0766", "0767", "0768", "0769",
+#                "0770", "0771", "0772", "0773", "0774", "0775", "0776"]
 # euroshop products
-#product_list = ["0600", "0601", "0602", "0603", "0604", "0605", "0606", "0607", "0608", "0609", "0610", 
-#                "0611", "0612", "0613", "0614", "0615", "0616", "0617", "0618", "0619", "0620", "0621", "0622"]
+product_list = ["0600", "0601", "0602", "0603", "0604", "0605", "0606", "0607", "0608", "0609", "0610", 
+                "0611", "0612", "0613", "0614", "0615", "0616", "0617", "0618", "0619", "0620", "0621", "0622"]
 
 vid_list = ["vid", "vid1", "vid2", "vid3"]
 used_vid = []
@@ -40,6 +40,8 @@ current_time = str(datetime.datetime.now().strftime("%H_%M"))
 n_products = input("Tippe die Anzahl an Produkten ein: ")
 vid_number = input("Tippe die Anzahl an Videos ein: ")
 blurred = input('Tppe "b" um blurred Bilder zu erhalten: ')
+if blurred != "b":
+    noise = input ('Tippe "n" für noise injection: ')
 
 parent_dir_mp = os.getcwd() + f"\\{dir_tool}" 
 create_dir_mp = os.path.join(parent_dir_mp, dir_mp)
@@ -171,10 +173,30 @@ for n in range(2):
                     if blurred == "b":
                         blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
                         width, height = blurredImage.size
+                    elif noise == "n":
+                        rgb_img = cropped_img_rotated.convert("RGB")
+                        k = 0
+                        q = 0
+                        for i in range(round(cropped_img_rotated.size[0]*cropped_img_rotated.size[1]) ):
+                            if q == cropped_img_rotated.size[1]:
+                                q = 0
+                                k += 1
+                            if k == cropped_img_rotated.size[0]:
+                                k = 0
+                            r, g, b = rgb_img.getpixel((k,q))
+
+                            putpixel = random.randint(0,5)
+                            if r + g + b > 50:
+                                if putpixel == 5:
+                                    cropped_img_rotated.putpixel(
+                                        (k, q),
+                                        (random.randint(0,255),random.randint(0,255),random.randint(0,255))
+                                    )
+                            q += 1
+                        width, height = cropped_img_rotated.size
                     else:
                         width, height = cropped_img_rotated.size
 
-                    width, height = cropped_img_rotated.size
                     x_center = (width/2) + random_x
                     y_center = (height/2) + random_y
                     val1 = round(x_center/1920, 4)
@@ -269,6 +291,28 @@ for n in range(2):
                             if blurred == "b":
                                 blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
                                 width, height = blurredImage.size
+                            elif noise == "n":
+                                rgb_img = cropped_img_rotated.convert("RGB")
+                                k = 0
+                                q = 0
+                                if random.randint(0,3) == 3:
+                                    for i in range(round(cropped_img_rotated.size[0]*cropped_img_rotated.size[1]) ):
+                                        if q == cropped_img_rotated.size[1]:
+                                            q = 0
+                                            k += 1
+                                        if k == cropped_img_rotated.size[0]:
+                                            k = 0
+                                        r, g, b = rgb_img.getpixel((k,q))
+
+                                        putpixel = random.randint(0,5)
+                                        if r + g + b > 50:
+                                            if putpixel == 5:
+                                                cropped_img_rotated.putpixel(
+                                                    (k, q),
+                                                    (random.randint(0,255),random.randint(0,255),random.randint(0,255))
+                                                )
+                                        q += 1
+                                width, height = cropped_img_rotated.size
                             else:
                                 width, height = cropped_img_rotated.size
 
