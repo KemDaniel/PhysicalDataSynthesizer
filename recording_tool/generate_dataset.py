@@ -10,7 +10,7 @@ dir_mp = "manipulated_images"
 test_input = input ("Anzahl der Ordner: ")
 new_folder = input("Name des Datensatzes: ")
 
-destination_folder = f'{dir_tool}\\'
+destination_folder = f'{dir_tool}/'
 png = 'png'
 txt = 'txt'
 images = 'images\\'
@@ -43,7 +43,7 @@ file_number = 0
 first_folder = 0
 for i in range(int(test_input)):
     folder = input("    >>> Ordner Name: ")
-    recording_tool = glob.glob(f'{dir_tool}\\{dir_mp}\\vid\\{folder}\\**\\')
+    recording_tool = glob.glob(f'{dir_tool}\\{dir_mp}\\vid\\{folder}\\**/')
     for folder in recording_tool:
         for x in os.listdir(folder):
             if os.path.isfile(os.path.join(folder, x)):
