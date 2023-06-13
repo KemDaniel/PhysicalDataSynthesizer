@@ -1,7 +1,6 @@
 from PIL import Image, ImageFilter
 import random
 import os
-import re
 import glob
 from natsort import natsorted
 import datetime
@@ -19,7 +18,8 @@ cam3 = "225"
 cam4 = "226"
 cam5 = "227"
 cam6 = "228"
-bg_count = 0
+count = 0
+dataset = "origin"
 
 # real products
 #product_list = ["0700", "0701", "0702", "0703", "0704", "0705", "0706", "0707", "0708", "0709", "0710",
@@ -32,312 +32,250 @@ bg_count = 0
 product_list = ["0600", "0601", "0602", "0603", "0604", "0605", "0606", "0607", "0608", "0609", "0610", 
                 "0611", "0612", "0613", "0614", "0615", "0616", "0617", "0618", "0619", "0620", "0621", "0622"]
 
-vid_list = ["vid", "vid1", "vid2", "vid3"]
+vid_list = ["vid", "vid1", "vid2", "vid3"] 
 used_vid = []
-cam_list = [cam1, cam2, cam3, cam4, cam5, cam6]
 current_time = str(datetime.datetime.now().strftime("%H_%M"))
 
-n_products = input("Tippe die Anzahl an Produkten ein: ")
 vid_number = input("Tippe die Anzahl an Videos ein: ")
-blurred = input('Tppe "b" um blurred Bilder zu erhalten: ')
-if blurred != "b":
-    noise = input ('Tippe "n" für noise injection: ')
+img_manipulation = False
+manipulation = ["origin", "blurred", "noise"]
 
 parent_dir_mp = os.getcwd() + f"\\{dir_tool}" 
 create_dir_mp = os.path.join(parent_dir_mp, dir_mp)
 
-# add new videos here and create it 
-create_dir_vid = os.path.join(create_dir_mp, dir_vid)
-create_dir_vid1 = os.path.join(create_dir_mp, dir_vid1)
-create_dir_vid2 = os.path.join(create_dir_mp, dir_vid2)
-create_dir_vid3 = os.path.join(create_dir_mp, dir_vid3)
+def create_directories():
+    # add new videos here and create it 
+    create_dir_vid = os.path.join(create_dir_mp, dir_vid)
+    create_dir_vid1 = os.path.join(create_dir_mp, dir_vid1)
+    create_dir_vid2 = os.path.join(create_dir_mp, dir_vid2)
+    create_dir_vid3 = os.path.join(create_dir_mp, dir_vid3)
 
-vid_product_number = os.path.join(create_dir_vid, n_products + "_" + current_time)
+    for x in manipulation:
+        if not img_manipulation:
+            x = "origin"
+        dataset_name = os.path.join(create_dir_vid, x + "_" + current_time)
 
-cam1_vid = os.path.join(vid_product_number, cam1)
-cam2_vid = os.path.join(vid_product_number, cam2)
-cam3_vid = os.path.join(vid_product_number, cam3)
-cam4_vid = os.path.join(vid_product_number, cam4)
-cam5_vid = os.path.join(vid_product_number, cam5)
-cam6_vid = os.path.join(vid_product_number, cam6)
+        cam1_vid = os.path.join(dataset_name, cam1)
+        cam2_vid = os.path.join(dataset_name, cam2)
+        cam3_vid = os.path.join(dataset_name, cam3)
+        cam4_vid = os.path.join(dataset_name, cam4)
+        cam5_vid = os.path.join(dataset_name, cam5)
+        cam6_vid = os.path.join(dataset_name, cam6)
 
+        if os.path.exists(create_dir_mp):
+            print(f"\nDirectory '{dir_mp}' exists already.\n")
+        else:
+            os.mkdir(create_dir_mp)
+            print(f"\nDirectory '{dir_mp}' created.\n")     
 
-if os.path.exists(create_dir_mp):
-    print(f"\nDirectory '{dir_mp}' exists already.\n")
-else:
-    os.mkdir(create_dir_mp)
-    print(f"\nDirectory '{dir_mp}' created.\n")     
+        if not os.path.exists(create_dir_vid):
+            os.mkdir(create_dir_vid)
+        if not os.path.exists(create_dir_vid1):
+            os.mkdir(create_dir_vid1)
+        if not os.path.exists(create_dir_vid2):
+            os.mkdir(create_dir_vid2)
+        if not os.path.exists(create_dir_vid3):
+            os.mkdir(create_dir_vid3)
 
-if not os.path.exists(create_dir_vid):
-    os.mkdir(create_dir_vid)
+        if not os.path.exists(dataset_name):
+            os.mkdir(dataset_name)
 
-if not os.path.exists(create_dir_vid1):
-    os.mkdir(create_dir_vid1)
-
-if not os.path.exists(create_dir_vid2):
-    os.mkdir(create_dir_vid2)
-
-if not os.path.exists(create_dir_vid3):
-    os.mkdir(create_dir_vid3)
-
-
-if not os.path.exists(vid_product_number):
-    os.mkdir(vid_product_number)
-
-if not os.path.exists(cam1_vid):
-    os.mkdir(cam1_vid)
-
-if not os.path.exists(cam2_vid):
-    os.mkdir(cam2_vid)
-
-if not os.path.exists(cam3_vid):
-    os.mkdir(cam3_vid)
-
-if not os.path.exists(cam4_vid):
-    os.mkdir(cam4_vid)
-
-if not os.path.exists(cam5_vid):
-    os.mkdir(cam5_vid)
-
-if not os.path.exists(cam6_vid):
-    os.mkdir(cam6_vid)
+        if not os.path.exists(cam1_vid):
+            os.mkdir(cam1_vid)
+        if not os.path.exists(cam2_vid):
+            os.mkdir(cam2_vid)
+        if not os.path.exists(cam3_vid):
+            os.mkdir(cam3_vid)
+        if not os.path.exists(cam4_vid):
+            os.mkdir(cam4_vid)
+        if not os.path.exists(cam5_vid):
+            os.mkdir(cam5_vid)
+        if not os.path.exists(cam6_vid):
+            os.mkdir(cam6_vid)
+        
 
 
-for n in range(2):
-    random_product = random.choice(product_list)
-
-    product_number = random_product
-    count = 0
-   
-    if n == 0:
-        for i in range(int(vid_number)):
-            random_video = random.choice(vid_list)
-
-            if random_video in used_vid:
-                while random_video in used_vid:
-                    random_video = random.choice(vid_list)
-                used_vid.append(random_video)
-            else:
-                used_vid.append(random_video)
-
-            print(random_video)
-            BGPath = glob.glob(f'{parent_dir_mp}/{dir_all_vid}/{random_video}/frames/*png')
-            sortedBGPath = natsorted(BGPath)
-            for video_frame in sortedBGPath:
-                
-                inPath = f'{parent_dir_mp}/results/{product_number}'
-                framePath = video_frame
-
-                for imagePath in os.listdir(inPath):
-                    inputPath = os.path.join(inPath, imagePath)
-                    cam_nb = imagePath.split(".")
-
-                    img = Image.open(inputPath)
-                    imgBG = Image.open(framePath).convert("RGBA")
-
-                    random_rotate = random.randrange(0, 360)
-                    random_x = random.randrange(129, 720)
-                    if random_x > 500:
-                        random_y = random.randrange(510, 720) 
-                        if cam_nb[0] == "224" or cam_nb[0] == "225" or cam_nb[0] == "226":
-                            random_size = round(random.uniform(0.5, 0.55),2)
-                        else:
-                            random_size = round(random.uniform(0.3, 0.35),2)
-                    else:
-                        random_y = random.randrange(400, 720)
-                        if cam_nb[0] == "224" or cam_nb[0] == "225" or cam_nb[0] == "226":
-                            random_size = round(random.uniform(0.65, 0.7),2)
-                        else:
-                            random_size = round(random.uniform(0.4, 0.5),2)
-
-                    if cam1 in inputPath:
-                        outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam1}'
-                    elif cam2 in inputPath:
-                        outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam2}'
-                    elif cam3 in inputPath:
-                        outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam3}'
-                    elif cam4 in inputPath:
-                        outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam4}'
-                    elif cam5 in inputPath:
-                        outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam5}'
-                    elif cam6 in inputPath:
-                        outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam6}'
-                    
-                    fullOutPath = os.path.join(outPath,f"{n}_%d_{imagePath}" % count)
-
-                    img_resized = img.resize((round(img.size[0]*random_size), round(img.size[1]*random_size))) 
-                    img_rotated = img_resized.rotate(random_rotate, expand=True)
-
-                    cropped_img_rotated = img_rotated.crop(img_rotated.getbbox())
-
-                    if blurred == "b":
-                        blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
-                        width, height = blurredImage.size
-                    elif noise == "n":
-                        rgb_img = cropped_img_rotated.convert("RGB")
-                        k = 0
-                        q = 0
-                        for i in range(round(cropped_img_rotated.size[0]*cropped_img_rotated.size[1]) ):
-                            if q == cropped_img_rotated.size[1]:
-                                q = 0
-                                k += 1
-                            if k == cropped_img_rotated.size[0]:
-                                k = 0
-                            r, g, b = rgb_img.getpixel((k,q))
-
-                            putpixel = random.randint(0,5)
-                            if r + g + b > 50:
-                                if putpixel == 5:
-                                    cropped_img_rotated.putpixel(
-                                        (k, q),
-                                        (random.randint(0,255),random.randint(0,255),random.randint(0,255))
-                                    )
-                            q += 1
-                        width, height = cropped_img_rotated.size
-                    else:
-                        width, height = cropped_img_rotated.size
-
-                    x_center = (width/2) + random_x
-                    y_center = (height/2) + random_y
-                    val1 = round(x_center/1920, 4)
-                    val2 = round(y_center/1440, 4)
-                    val3 = round(width/1920, 4)
-                    val4 = round(height/1440, 4)
-
-                    val1 = format(val1, '.4f')
-                    val2 = format(val2, '.4f')
-                    val3 = format(val3, '.4f')
-                    val4 = format(val4, '.4f')
-
-                    cam = imagePath.split(".")
-
-                    with open(f"{outPath}/{n}_%d_{cam[0]}.txt" % count, "a") as f:
-                        f.write(f"1 {val1} {val2} {val3} {val4}\n")
-
-                    if blurred == "b":
-                        imgBG.paste(blurredImage, (random_x,random_y), mask = blurredImage)
-                    else:
-                        imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
-
-                    imgBG.save(fullOutPath)
-                    
-                count += 1
+def product_rotation():
+    random_rotate = random.randrange(0, 360)
+    random_x = random.randrange(129, 720)
+    if random_x > 500:
+        random_y = random.randrange(510, 720) 
+        if cam_nb[0] == "224" or cam_nb[0] == "225" or cam_nb[0] == "226":
+            random_size = round(random.uniform(0.5, 0.55),2)
+        else:
+            random_size = round(random.uniform(0.35, 0.4),2)
     else:
-        for cam_number in cam_list:
+        random_y = random.randrange(400, 720)
+        if cam_nb[0] == "224" or cam_nb[0] == "225" or cam_nb[0] == "226":
+            random_size = round(random.uniform(0.65, 0.7),2)
+        else:
+            random_size = round(random.uniform(0.4, 0.5),2)
+        
+    img_resized = img.resize((round(img.size[0]*random_size), round(img.size[1]*random_size))) 
+    img_rotated = img_resized.rotate(random_rotate, expand=True)
 
-            BGPath = glob.glob(f'{parent_dir_mp}/{dir_mp}/vid/{n_products}_{current_time}/{cam_number}/*png')
+    cropped_img_rotated = img_rotated.crop(img_rotated.getbbox())
 
-            inPath = f'{parent_dir_mp}/results/{product_number}'
+    return cropped_img_rotated, random_x, random_y
 
-            count = 0
-            sortedBGPath = natsorted(BGPath)
+def set_outPath(dataset):
+    if cam1 in inputPath:
+        outPath = f'{dir_tool}/{dir_mp}/vid/{dataset + "_" + current_time}/{cam1}'
+    elif cam2 in inputPath:
+        outPath = f'{dir_tool}/{dir_mp}/vid/{dataset + "_" + current_time}/{cam2}'
+    elif cam3 in inputPath:
+        outPath = f'{dir_tool}/{dir_mp}/vid/{dataset + "_" + current_time}/{cam3}'
+    elif cam4 in inputPath:
+        outPath = f'{dir_tool}/{dir_mp}/vid/{dataset + "_" + current_time}/{cam4}'
+    elif cam5 in inputPath:
+        outPath = f'{dir_tool}/{dir_mp}/vid/{dataset + "_" + current_time}/{cam5}'
+    elif cam6 in inputPath:
+        outPath = f'{dir_tool}/{dir_mp}/vid/{dataset + "_" + current_time}/{cam6}'
 
-            for video_frame in sortedBGPath:
-                framePath = video_frame
+    return outPath
 
-                for imagePath in os.listdir(inPath):
-                    if cam_number in imagePath:
-                        
-                        for p in range(int(n_products)-1):
-                            random_product = random.choice(product_list)
+def noise_injection():
+    noiseImage = cropped_img_rotated.copy()
+    noise_img = cropped_img_rotated.convert("RGB")
+    if random.randint(5,5) == 5: # (0,5)
+        k = 0
+        q = 0
+        for i in range(round(noiseImage.size[0]*noiseImage.size[1]) ):
+            if q == noiseImage.size[1]:
+                q = 0
+                k += 1
+            if k == noiseImage.size[0]:
+                k = 0
+            r, g, b = noise_img.getpixel((k,q))
 
-                            product_number = random_product
+            putpixel = random.randint(0,20)
+            if r + g + b > 50:
+                if putpixel == 5:
+                    noiseImage.putpixel(
+                        (k, q),
+                        (random.randint(0,255),random.randint(0,255),random.randint(0,255))
+                    )
+            q += 1
+    width, height = noiseImage.size
+    
+    return noiseImage, width, height
 
-                            inPath = f'{parent_dir_mp}/results/{product_number}'
+def write_to_label_file(outPath):
+    x_center = (width/2) + random_x
+    y_center = (height/2) + random_y
+    val1 = round(x_center/1920, 4)
+    val2 = round(y_center/1440, 4)
+    val3 = round(width/1920, 4)
+    val4 = round(height/1440, 4)
 
-                            inputPath = os.path.join(inPath, imagePath)
+    val1 = format(val1, '.4f')
+    val2 = format(val2, '.4f')
+    val3 = format(val3, '.4f')
+    val4 = format(val4, '.4f')
 
-                            img = Image.open(inputPath)
-                            if bg_count == 0:
-                                imgBG = Image.open(framePath).convert("RGBA")
-                                bg_count += 1
-                            cam_nb = imagePath.split(".")
+    cam = imagePath.split(".")
 
-                            random_rotate = random.randrange(0, 360)
-                            random_x = random.randrange(129, 720)
-                            if random_x > 500:
-                                random_y = random.randrange(510, 720) 
-                                if cam_nb[0] == "224" or cam_nb[0] == "225" or cam_nb[0] == "226":
-                                    random_size = round(random.uniform(0.5, 0.55),2)
-                                else:
-                                    random_size = round(random.uniform(0.3, 0.35),2)
-                            else:
-                                random_y = random.randrange(400, 720)
-                                if cam_nb[0] == "224" or cam_nb[0] == "225" or cam_nb[0] == "226":
-                                    random_size = round(random.uniform(0.65, 0.7),2)
-                                else:
-                                    random_size = round(random.uniform(0.4, 0.5),2)
-                            
-                            if cam1 in inputPath:
-                                outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam1}'
-                            elif cam2 in inputPath:
-                                outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam2}'
-                            elif cam3 in inputPath:
-                                outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam3}'
-                            elif cam4 in inputPath:
-                                outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam4}'
-                            elif cam5 in inputPath:
-                                outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam5}'
-                            elif cam6 in inputPath:
-                                outPath = f'{dir_tool}/{dir_mp}/vid/{n_products + "_" + current_time}/{cam6}'
-                            
-                            fullOutPath = os.path.join(outPath,f"0_%d_{imagePath}" % count)
+    with open(f"{outPath}/0_%d_{cam[0]}.txt" % count, "a") as f:
+        f.write(f"1 {val1} {val2} {val3} {val4}\n")
 
-                            img_resized = img.resize((round(img.size[0]*random_size), round(img.size[1]*random_size))) 
-                            img_rotated = img_resized.rotate(random_rotate, expand=True)
+def image_manipulation():                                                        
 
-                            cropped_img_rotated = img_rotated.crop(img_rotated.getbbox())
+    outPath = set_outPath("origin")
+    imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
+    write_to_label_file(outPath)
 
-                            if blurred == "b":
-                                blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
-                                width, height = blurredImage.size
-                            elif noise == "n":
-                                rgb_img = cropped_img_rotated.convert("RGB")
-                                k = 0
-                                q = 0
-                                if random.randint(0,3) == 3:
-                                    for i in range(round(cropped_img_rotated.size[0]*cropped_img_rotated.size[1]) ):
-                                        if q == cropped_img_rotated.size[1]:
-                                            q = 0
-                                            k += 1
-                                        if k == cropped_img_rotated.size[0]:
-                                            k = 0
-                                        r, g, b = rgb_img.getpixel((k,q))
+    outPath = set_outPath("blurred")
+    img_blurred.paste(blurredImage, (random_x,random_y), mask = blurredImage)                                                           
+    write_to_label_file(outPath)
 
-                                        putpixel = random.randint(0,5)
-                                        if r + g + b > 50:
-                                            if putpixel == 5:
-                                                cropped_img_rotated.putpixel(
-                                                    (k, q),
-                                                    (random.randint(0,255),random.randint(0,255),random.randint(0,255))
-                                                )
-                                        q += 1
-                                width, height = cropped_img_rotated.size
-                            else:
-                                width, height = cropped_img_rotated.size
+    outPath = set_outPath("noise")
+    img_noise.paste(noiseImage, (random_x,random_y), mask = noiseImage)
+    write_to_label_file(outPath)
 
-                            x_center = (width/2) + random_x
-                            y_center = (height/2) + random_y
-                            val1 = round(x_center/1920, 4)
-                            val2 = round(y_center/1440, 4)
-                            val3 = round(width/1920, 4)
-                            val4 = round(height/1440, 4)
+    #outPath = set_outPath("new")                                                                                                       ## add new image manipulation  
+    #img_noise.paste(new, (random_x,random_y), mask = new)
+    #write_to_label_file(outPath)
 
-                            val1 = format(val1, '.4f')
-                            val2 = format(val2, '.4f')
-                            val3 = format(val3, '.4f')
-                            val4 = format(val4, '.4f')
+    return imgBG, img_blurred, img_noise                                                                                                ## add new image manipulation
 
-                            cam = imagePath.split(".")
-                            with open(f"{outPath}/0_%d_{cam[0]}.txt" % count, "a") as f:
-                                f.write(f"1 {val1} {val2} {val3} {val4}\n")
+def save_images():                                                                                        
+    if img_manipulation:
+        outPath = set_outPath("origin")
+        fullOutPath = os.path.join(outPath,f"0_%d_{imagePath}" % count)
+        imgBG.save(fullOutPath)
 
-                            if blurred == "b":
-                                imgBG.paste(blurredImage, (random_x,random_y), mask = blurredImage)
-                            else:
-                                imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
+        outPath = set_outPath("blurred")
+        fullOutPath = os.path.join(outPath,f"0_%d_{imagePath}" % count)
+        img_blurred.save(fullOutPath)                                                                                                   
 
-                        imgBG.save(fullOutPath)
-                        bg_count = 0
-                count += 1
+        outPath = set_outPath("noise")
+        fullOutPath = os.path.join(outPath,f"0_%d_{imagePath}" % count)
+        img_noise.save(fullOutPath)
+
+        #outPath = set_outPath("new")                                                                                                   ## add new image manipulation
+        #fullOutPath = os.path.join(outPath,f"0_%d_{imagePath}" % count)
+        #new.save(fullOutPath)
+    
+def save_images_origin():
+    imgBG.save(fullOutPath)
+
+create_directories()
+
+for i in range(int(vid_number)):
+    random_video = random.choice(vid_list)
+
+    # selects random_video but not double
+    if random_video in used_vid:
+        while random_video in used_vid:
+            random_video = random.choice(vid_list)
+        used_vid.append(random_video)
+    else:
+        used_vid.append(random_video)
+
+    print(random_video)
+    BGPath = glob.glob(f'{parent_dir_mp}/{dir_all_vid}/{random_video}/frames/*png')
+    sortedBGPath = natsorted(BGPath)
+
+    # each frame of the random video
+    for video_frame in sortedBGPath:
+        inPath = f'{parent_dir_mp}/results/0600'
+
+        # saves frame in 223, than 224, than 225 ...
+        for imagePath in os.listdir(inPath):
+            imgBG = Image.open(video_frame).convert("RGBA")    
+            img_blurred = imgBG.copy()
+            img_noise = imgBG.copy()
+            #new = imgBG.copy()                                                                                                         # to add new image manipulations start here
+
+            # puts random amount of products between 4 and 8 into the image  
+            for p in range(random.randint(4,8)):
+                random_product = random.choice(product_list)
+                inPath = f'{parent_dir_mp}/results/{random_product}'
+
+                inputPath = os.path.join(inPath, imagePath)
+                cam_nb = imagePath.split(".")
+                img = Image.open(inputPath)
+
+                # function to rotate the product
+                cropped_img_rotated, random_x, random_y = product_rotation()
+
+                blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(2,2)))                                ## add new image manipulation
+                noiseImage, width, height = noise_injection()
+                width, height = cropped_img_rotated.size
+                
+                if img_manipulation:
+                    imgBG, img_blurred, img_noise = image_manipulation()                                                                ## add new image manipulation
+                else:
+                    outPath = set_outPath(dataset)
+                    fullOutPath = os.path.join(outPath,f"0_%d_{imagePath}" % count)
+
+                    imgBG.paste(cropped_img_rotated, (random_x,random_y), mask = cropped_img_rotated)
+
+                    # writes x_center, y_center, width, height from the products in the label file
+                    write_to_label_file(outPath)
+            if img_manipulation:
+                save_images()                                                                              
+            else:
+                save_images_origin()
+        count += 1
 
