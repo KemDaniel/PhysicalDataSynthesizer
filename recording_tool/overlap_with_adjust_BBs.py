@@ -1,4 +1,4 @@
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageEnhance
 import random
 import os
 import glob
@@ -6,6 +6,8 @@ from natsort import natsorted
 import datetime
 import numpy as np
 import copy
+from timm.data.random_erasing import RandomErasing
+from torchvision import transforms
 
 dir_tool = "recording_tool"
 dir_mp = "manipulated_images"
@@ -40,7 +42,7 @@ current_time = str(datetime.datetime.now().strftime("%H_%M"))
 
 vid_number = input("Tippe die Anzahl an Videos ein: ")
 img_manipulation = True
-manipulation = ["origin"]#, "blurred", "noise"]                                                                                       ## add new manipulation
+manipulation = ["origin", "blurred", "noise", "brightness", "colorSpace", "erase"]                                                                                       ## add new manipulation
 
 parent_dir_mp = os.getcwd() + f"\\{dir_tool}" 
 create_dir_mp = os.path.join(parent_dir_mp, dir_mp)
@@ -247,7 +249,7 @@ def calculate_new_bb(changed_masks, orig_masks, x_coord, y_coord):
 
 
 def blur(blurred_list):
-    blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(2,2)))
+    blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
 
     blurred_list.append(blurredImage)
 
@@ -280,6 +282,55 @@ def noise_injection(noise_list):
     noise_list.append(noiseImage)
 
     return noise_list
+
+
+def brightness(brightness_list):
+    brightImage = cropped_img_rotated.copy()
+
+    enhancer = ImageEnhance.Brightness(brightImage)
+
+    brightness = round(random.uniform(0.5, 1.5),1)
+
+    brightImage = enhancer.enhance(brightness)
+
+    brightness_list.append(brightImage)        
+
+    return brightness_list
+
+
+def colorSpace(colorSpace_list):
+    colorSpaceImage = cropped_img_rotated.copy()
+    if random.randint(0,5) == 5: 
+
+        r_value = random.randint(-100, 100)
+        g_value = random.randint(-100, 100)
+        b_value = random.randint(-100, 100)
+
+        for h in range(colorSpaceImage.size[0]):
+            for w in range(colorSpaceImage.size[1]):
+                r, g, b, a = colorSpaceImage.getpixel((h, w))
+                if r + g + b > 50:
+                    colorSpaceImage.putpixel((h,w),(r + r_value, g + g_value , b + b_value))
+
+    colorSpace_list.append(colorSpaceImage)
+
+    return colorSpace_list
+
+
+def erase(erase_list):
+    orig_img = cropped_img_rotated.copy()
+    if random.randint(5,5) == 5:
+        erasedImage = transforms.ToTensor()(orig_img)
+        random_erase = RandomErasing(probability=1, mode='pixels', device='cpu')
+        tensor_img = random_erase(erasedImage)
+        erasedImage = transforms.ToPILImage()(tensor_img)
+
+        erase_list.append(erasedImage)
+
+    else:
+        erase_list.append(orig_img)
+    
+    return erase_list
 
 
 def write_to_label_file(outPath, width, height, x_coord, y_coord):
@@ -359,7 +410,10 @@ for i in range(int(vid_number)):
 
             img_list = []
             blurred_list = []
-            noise_list = []                                                                                                             ## add new list
+            noise_list = []    
+            brightness_list = []
+            colorSpace_list = []       
+            erase_list = []                                                                                                  ## add new list
             random_x_list = []
             random_y_list = []
 
@@ -382,6 +436,9 @@ for i in range(int(vid_number)):
                 if img_manipulation:                                                                                                    ## add new function
                     blur(blurred_list)
                     noise_injection(noise_list)
+                    brightness(brightness_list)
+                    colorSpace(colorSpace_list)
+                    erase(erase_list)
 
             product_mask = calculate_product_mask(img_list)
 
@@ -403,6 +460,13 @@ for i in range(int(vid_number)):
                             save_image(blurred_list, imgPath, orig_x_list, orig_y_list)
                         case "noise":
                             save_image(noise_list, imgPath, orig_x_list, orig_y_list)
+                        case "brightness":
+                            save_image(brightness_list, imgPath, orig_x_list, orig_y_list)
+                        case "colorSpace":
+                            save_image(colorSpace_list, imgPath, orig_x_list, orig_y_list)
+                        case "erase":
+                            save_image(erase_list, imgPath, orig_x_list, orig_y_list)
+                        
                     write_to_label_file(outPath, width_list, height_list, random_x_list, random_y_list)             
             else:
                 outPath = set_outPath("origin")
