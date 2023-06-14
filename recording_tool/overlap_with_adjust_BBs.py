@@ -163,7 +163,6 @@ def calculate_overlapping(product_mask, x_coord, y_coord, size):
                 if product_img[h][w] == 255 and mask[h][w] == 0:
                     mask[h][w] = 255
         
-        print(test)
         bg_list.append(product_img)
         changed_masks.append(x)
 
@@ -217,9 +216,6 @@ def calculate_new_bb(changed_masks, orig_masks, x_coord, y_coord):
                 new_x_coord = x_temp + min_x
                 new_y_coord = y_temp + min_y 
 
-                if min_x > 20 or min_y > 20:
-                    print("new coords")
-
                 x_coord[i] = new_x_coord
                 y_coord[i] = new_y_coord
 
@@ -238,18 +234,15 @@ def calculate_new_bb(changed_masks, orig_masks, x_coord, y_coord):
                 zero_width = 0
                 height_list.append(zero_height)
                 width_list.append(zero_width)
-                print("fully overlapped")
-
 
         else:
             height, width = x.shape
 
             height_list.append(height)
             width_list.append(width)
-        
+
         i += 1
 
-    print("Products overlapped: " + str(bb_changed))
     return height_list, width_list, x_coord, y_coord
 
 
@@ -336,7 +329,6 @@ def save_image(list, imgPath, random_x_list, random_y_list):
     for img in list:
         manipulatedBG.paste(img, (random_x_list[i],random_y_list[i]), mask = img)
         i += 1
-        print()
     manipulatedBG.save(imgPath)
 
 
@@ -393,17 +385,12 @@ for i in range(int(vid_number)):
 
             product_mask = calculate_product_mask(img_list)
 
-            print("x: " , str(random_x_list))
-            print("y: ", str(random_y_list))
             orig_x_list = copy.deepcopy(random_x_list)
             orig_y_list = copy.deepcopy(random_y_list)
 
             changed_masks, orig_masks = calculate_overlapping(product_mask, random_x_list, random_y_list, imgBG.size)
 
             height_list, width_list, random_x_list, random_y_list = calculate_new_bb(changed_masks, orig_masks, random_x_list, random_y_list)
-
-            print("x: " , str(random_x_list))
-            print("y: ", str(random_y_list))
 
             if img_manipulation:
                 for x in manipulation:
