@@ -249,7 +249,10 @@ def calculate_new_bb(changed_masks, orig_masks, x_coord, y_coord):
 
 
 def blur(blurred_list):
-    blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(0,2)))
+    if random.randint(0,100) > 80:
+        blurredImage = cropped_img_rotated.filter(ImageFilter.GaussianBlur(random.randint(1,3)))
+    else: 
+        blurredImage = cropped_img_rotated
 
     blurred_list.append(blurredImage)
 
@@ -259,7 +262,7 @@ def blur(blurred_list):
 def noise_injection(noise_list):
     noiseImage = cropped_img_rotated.copy()
     noise_img = cropped_img_rotated.convert("RGB")
-    if random.randint(0,5) == 5: 
+    if random.randint(0,100) > 80: 
         k = 0
         q = 0
         for i in range(round(noiseImage.size[0]*noiseImage.size[1]) ):
@@ -270,7 +273,7 @@ def noise_injection(noise_list):
                 k = 0
             r, g, b = noise_img.getpixel((k,q))
 
-            putpixel = random.randint(0,20)
+            putpixel = random.randint(0,15)
             if r + g + b > 50:
                 if putpixel == 5:
                     noiseImage.putpixel(
@@ -300,7 +303,7 @@ def brightness(brightness_list):
 
 def colorSpace(colorSpace_list):
     colorSpaceImage = cropped_img_rotated.copy()
-    if random.randint(0,5) == 5: 
+    if random.randint(0,100) > 80: 
 
         r_value = random.randint(-100, 100)
         g_value = random.randint(-100, 100)
@@ -319,9 +322,9 @@ def colorSpace(colorSpace_list):
 
 def erase(erase_list):
     orig_img = cropped_img_rotated.copy()
-    if random.randint(5,5) == 5:
+    if random.randint(0,100) > 80:
         erasedImage = transforms.ToTensor()(orig_img)
-        random_erase = RandomErasing(probability=1, mode='pixels', device='cpu')
+        random_erase = RandomErasing(probability=1, mode='rand', device='cpu')
         tensor_img = random_erase(erasedImage)
         erasedImage = transforms.ToPILImage()(tensor_img)
 
